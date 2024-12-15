@@ -34,7 +34,7 @@ void loop() {
   checkButton();   // Handle button press to reset position
 
  /* put in all the animations you want to run */
- switch (position / 10) { // Divide by 10 to create ranges: 0-10, 10-20, etc.
+ switch (position / 5) { // Divide by 10 to create ranges: 0-10, 10-20, etc.
     case 0:
       // Position is between 0 and 9
       Serial.println("Position is between 0 and 10");
