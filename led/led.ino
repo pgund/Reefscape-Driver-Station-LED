@@ -1,5 +1,4 @@
 #include <FastLED.h>
-void TwinklePixels(int Color = random(256), int ColorSaturation = 255,  int PixelVolume = 20, int FadeAmount = 50, int DelayDuration = 50);
 
 #define NUM_LEDS      123     // Enter the total number of LEDs on the strip
 #define LED_PIN       4       // The pin connected to DATA line to control the LEDs
