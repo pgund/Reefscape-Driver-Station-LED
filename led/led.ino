@@ -1,3 +1,5 @@
+/* This code is adapted from Electrictriangle: https://github.com/Electriangle*/
+
 #include <FastLED.h>
 
 #define NUM_LEDS      123     // Enter the total number of LEDs on the strip
