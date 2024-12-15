@@ -2,19 +2,113 @@
 
 #include <FastLED.h>
 
+// led defs
 #define NUM_LEDS      123     // Enter the total number of LEDs on the strip
 #define LED_PIN       4       // The pin connected to DATA line to control the LEDs
 CRGB leds[NUM_LEDS];
 
+// rotary defs
+#define CLK 2    // Clock pin (Channel A)
+#define DT 3     // Data pin (Channel B)
+#define SW 4     // Switch pin (push-button)
+
+volatile int position = 0;  // Tracks encoder position
+int lastCLK;                // Last state of CLK pin
+bool resetFlag = false;     // Flag for reset condition
+
 void setup() {
+  // LED setup
   FastLED.addLeds<WS2812B, LED_PIN, GRB>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
   FastLED.setMaxPowerInVoltsAndMilliamps(5, 2500);    // Set power limit of LED strip to 5V, 1500mA
   FastLED.clear();                                    // Initialize all LEDs to "OFF"
+
+  // encoder setup
+  setupEncoderPins();
+  lastCLK = digitalRead(CLK); // Initialize lastCLK state
+  Serial.begin(9600);         // Start serial communication
 }
 
 void loop() {
+  // encoder 
+  trackRotation(); // Handle rotary encoder rotation
+  checkButton();   // Handle button press to reset position
+
  /* put in all the animations you want to run */
+ switch (position / 10) { // Divide by 10 to create ranges: 0-10, 10-20, etc.
+    case 0:
+      // Position is between 0 and 9
+      Serial.println("Position is between 0 and 10");
+      COMTwinklePixels();
+      break;
+    case 1:
+      // Position is between 10 and 19
+      Serial.println("Position is between 10 and 20");
+      COMKnightRider();
+      break;
+    case 2:
+      // Position is between 20 and 29
+      Serial.println("Position is between 20 and 30");
+      rainbowCycle(5);
+      break;
+    case 3:
+      // Position is between 30 and 39
+      Serial.println("Position is between 30 and 40");
+      COMFireYellow();
+      break;
+    default:
+      // Position is greater than or equal to 40 or less than 0
+      Serial.println("Position is outside the expected range");
+      COMBlue();
+      break;
+  }
+
 }
+
+void setupEncoderPins() {
+  pinMode(CLK, INPUT);
+  pinMode(DT, INPUT);
+  pinMode(SW, INPUT_PULLUP); // Enable internal pull-up for switch
+}
+
+// Track rotation of the encoder
+void trackRotation() {
+  int currentCLK = digitalRead(CLK); // Read current state of CLK
+  
+  // Check if the CLK pin state has changed (rotation detected)
+  if (currentCLK != lastCLK) {
+    // Determine rotation direction based on DT pin
+    if (digitalRead(DT) != currentCLK) {
+      position++; // Clockwise
+    } else {
+      position--; // Counterclockwise
+    }
+
+    // Output current position to the Serial Monitor
+    Serial.print("Position: ");
+    Serial.println(position);
+  }
+
+  lastCLK = currentCLK; // Update lastCLK state
+}
+
+void checkButton() {
+  if (digitalRead(SW) == LOW) { // Button is pressed
+    if (!resetFlag) { // Prevent multiple resets during a single press
+      resetPosition();
+      resetFlag = true;
+    }
+  } else {
+    resetFlag = false; // Clear reset flag when button is released
+  }
+}
+
+// Reset the position to 0
+void resetPosition() {
+  position = 0; // Reset position to 0
+  Serial.println("Position reset to 0");
+}
+
+// LED CODE 
 
 void off() {
   /* This function will turn OFF all the LEDs. */
