@@ -6,7 +6,7 @@ CRGB leds[NUM_LEDS];
 
 void setup() {
   FastLED.addLeds<WS2812B, LED_PIN, GRB>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
-  FastLED.setMaxPowerInVoltsAndMilliamps(5, 1500);    // Set power limit of LED strip to 5V, 1500mA
+  FastLED.setMaxPowerInVoltsAndMilliamps(5, 2500);    // Set power limit of LED strip to 5V, 1500mA
   FastLED.clear();                                    // Initialize all LEDs to "OFF"
 }
 
