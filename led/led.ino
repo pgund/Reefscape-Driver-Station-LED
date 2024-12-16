@@ -17,15 +17,18 @@ int lastCLK;                // Last state of CLK pin
 bool resetFlag = false;     // Flag for reset condition
 
 void setup() {
+  // encoder setup
+  Serial.begin(9600);         // Start serial communication
+  setupEncoderPins();
+  lastCLK = digitalRead(CLK); // Initialize lastCLK state
+  
+
   // LED setup
   FastLED.addLeds<WS2812B, LED_PIN, GRB>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
   FastLED.setMaxPowerInVoltsAndMilliamps(5, 2500);    // Set power limit of LED strip to 5V, 1500mA
   FastLED.clear();                                    // Initialize all LEDs to "OFF"
 
-  // encoder setup
-  setupEncoderPins();
-  lastCLK = digitalRead(CLK); // Initialize lastCLK state
-  Serial.begin(9600);         // Start serial communication
+
 }
 
 void loop() {
