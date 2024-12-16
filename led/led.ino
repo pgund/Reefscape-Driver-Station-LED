@@ -4,7 +4,7 @@
 
 // led defs
 #define NUM_LEDS      123     // Enter the total number of LEDs on the strip
-#define LED_PIN       4       // The pin connected to DATA line to control the LEDs
+#define LED_PIN       1       // The pin connected to DATA line to control the LEDs
 CRGB leds[NUM_LEDS];
 
 // rotary defs
