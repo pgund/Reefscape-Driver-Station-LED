@@ -3,8 +3,8 @@
 #include <FastLED.h>
 
 // led defs
-#define NUM_LEDS      123     // Enter the total number of LEDs on the strip
-#define LED_PIN       1       // The pin connected to DATA line to control the LEDs
+#define NUM_LEDS      62     // Enter the total number of LEDs on the strip
+#define LED_PIN       7       // The pin connected to DATA line to control the LEDs
 CRGB leds[NUM_LEDS];
 
 // rotary defs
@@ -35,6 +35,18 @@ void loop() {
   // encoder 
   trackRotation(); // Handle rotary encoder rotation
   checkButton();   // Handle button press to reset position
+  
+  rainbowCycle(0);
+  // COMKnightRider();
+  // COMTwinklePixels();
+  // COMFireBlue();
+  // COMBlue();
+
+  // knightRider(255, 0, 0, 5, 10, 1000);
+  // knightRider(255, 255, 0, 5, 10, 1000);
+
+
+
 
  /* put in all the animations you want to run */
  switch (position / 5) { // Divide by 10 to create ranges: 0-10, 10-20, etc.
@@ -173,7 +185,7 @@ void twinklePixels(int Color, int ColorSaturation, int PixelVolume, int FadeAmou
   for (int i = 0; i < NUM_LEDS; i++) {
     // Draw twinkling pixels
     if (random(PixelVolume) < 2) {     // Chance for pixel to twinkle
-      uint8_t intensity = random(100, 255);     // Configure random intensity
+      uint8_t intensity = random(254, 255);     // Configure random intensity
       CRGB set_color = CHSV(Color, ColorSaturation, intensity);     // Configure color with max saturation and variable value (intensity)
       leds[i] = set_color;    // Set the pixel color
     }
@@ -346,8 +358,8 @@ byte *Wheel(byte WheelPosition) {
 }
 
 void COMTwinklePixels() {
-  twinklePixels(42, 255, 20, 50, 50);
-  twinklePixels(170, 255, 20, 50, 50);
+  twinklePixels(42, 255, 100, 50, 0);
+  twinklePixels(170, 255, 100, 50, 0);
 }
 
 void COMFireBlue() {
@@ -367,6 +379,6 @@ void COMYellow() {
 }
 
 void COMKnightRider() {
-  knightRider(255, 0, 0, 5, 10, 50);
-  knightRider(255, 255, 0, 5, 10, 50);
+  knightRider(0, 0, 255, 5, 10, 0);
+  knightRider(255, 255, 0, 5, 10, 0);
 }
