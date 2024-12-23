@@ -204,7 +204,7 @@ void wave(CRGB color, int waveLength, int speed) {
 }
 
 void comet(CRGB color) { // https://github.com/davepl/DavesGarageLEDSeries/blob/master/LED%20Episode%2006/src/comet.h
-    const byte fadeAmount = 128;
+    const byte fadeAmount = 225;
     const int cometSize = 5;
     static int position = 0;
     static int direction = 1;
@@ -212,7 +212,7 @@ void comet(CRGB color) { // https://github.com/davepl/DavesGarageLEDSeries/blob/
 
     unsigned long currentMillis = millis();
 
-    if (currentMillis - lastUpdate >= 50) {
+    if (currentMillis - lastUpdate >= 1) {
         lastUpdate = currentMillis;
 
         FastLED.clear();
