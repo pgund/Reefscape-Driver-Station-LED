@@ -75,7 +75,6 @@ void setupEncoderPins() {
 }
 
 bool recievingData() {
-    clearLEDs();
     if (true) {
         setLEDs(CRGB(0, 255, 0));
     } else {
@@ -86,20 +85,23 @@ bool recievingData() {
 /*          ENCODER FUNCTIONS         */
 void trackEncoderRotation() {
     int currentCLK = digitalRead(CLK); // Read current state of CLK
-    // Check if the CLK pin state has changed (rotation detected)
-    if (currentCLK != lastCLK) {
-        // Determine rotation direction based on DT pin
-        if (digitalRead(DT) == HIGH) {
-        encoderPosition++; // Clockwise
+    if (currentCLK != lastCLK) { // Check if the CLK pin state has changed (rotation detected)
+        if (digitalRead(DT) == HIGH) { // Determine rotation direction based on DT pin
+            encoderPosition++; // Clockwise
+            if (encoderPosition > MAX_ENCODER_POSITION) { // Wrap around if exceeding MAX_POSITION
+                encoderPosition = 0;
+            }
         } else {
-        encoderPosition--; // Counterclockwise
+            encoderPosition--; // Counterclockwise
+            if (encoderPosition < 0) { // Wrap around if below 0
+                encoderPosition = MAX_ENCODER_POSITION;
+            }
         }
-        // Output current encoderPosition to the Serial Monitor
-        Serial.print("encoderPosition: ");
-        Serial.println(encoderPosition);
+        Serial.print("Encoder Position: ");
+        Serial.println(encoderPosition); // Print encoder position on a new line
+
+        lastCLK = currentCLK; // Update lastCLK state
     }
-    lastCLK = currentCLK; // Update lastCLK state
-}
 
     if (encoderPosition >= 0 && encoderPosition < 5) {
         positionCase = 1;
@@ -224,5 +226,5 @@ void comet(CRGB color) { // https://github.com/davepl/DavesGarageLEDSeries/blob/
 }
 
 void bounce(CRGB color) {
-
+    
 }
