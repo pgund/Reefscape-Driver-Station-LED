@@ -151,7 +151,7 @@ void rainbow() {
     static int hue = 0;
     fill_rainbow(leds, NUM_LEDS, hue, 5); // Increment hue per LED
     FastLED.show();
-    hue++;
+    hue = hue + 7;
 }
 
 void setLEDs(CRGB color) {
