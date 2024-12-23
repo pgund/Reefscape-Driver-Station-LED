@@ -1,6 +1,5 @@
 #include <FastLED.h>
-/* This code is adapted from Electrictriangle: https://github.com/Electriangle*/
-#include <FastLED.h>
+/* This code is adapted from Electrictriangle: https://github.com/Electriangle */
 // led defs
 #define NUM_LEDS      123     // Enter the total number of LEDs on the strip
 #define LED_PIN       7       // The pin connected to DATA line to control the LEDs
@@ -9,7 +8,7 @@ CRGB leds[NUM_LEDS];
 #define CLK 2    // Clock pin (Channel A)
 #define DT 3     // Data pin (Channel B)
 #define SW 4     // Switch pin (push-button)
-volatile int position = 0;  // Tracks encoder position
+volatile int encoderPosition = 0;  // Tracks encoder encoderPosition
 int lastCLK;                // Last state of CLK pin
 bool resetFlag = false;     // Flag for reset condition
 void setup() {
@@ -25,8 +24,8 @@ void setup() {
 void loop() {
   // encoder
   trackRotation(); // Handle rotary encoder rotation
-  checkButton();   // Handle button press to reset position
-  rainbowCycle(0);
+  // checkButton();   // Handle button press to reset encoderPosition
+  // rainbowCycle(0);
   // COMKnightRider();
   // COMTwinklePixels();
   // COMFireBlue();
@@ -34,34 +33,34 @@ void loop() {
   // knightRider(255, 0, 0, 5, 10, 1000);
   // knightRider(255, 255, 0, 5, 10, 1000);
   /* put in all the animations you want to run */
-//  switch (position / 5) { // Divide by 10 to create ranges: 0-10, 10-20, etc.
-//    case 0:
-//      // Position is between 0 and 9
-//      Serial.println("Position is between 0 and 10");
-//      COMTwinklePixels();
-//      break;
-//    case 1:
-//      // Position is between 10 and 19
-//      Serial.println("Position is between 10 and 20");
-//      COMKnightRider();
-//      break;
-//    case 2:
-//      // Position is between 20 and 29
-//      Serial.println("Position is between 20 and 30");
-//      rainbowCycle(5);
-//      break;
-//    case 3:
-//      // Position is between 30 and 39
-//      Serial.println("Position is between 30 and 40");
-//      COMFireYellow();
-//      break;
-//    default:
-//      // Position is greater than or equal to 40 or less than 0
-//      Serial.println("Position is outside the expected range");
-//      COMBlue();
-//      break;
-//  }
-rainbowCycle(1);
+ Serial.println("wahoo its working");
+  switch (encoderPosition) { // Divide by 10 to create ranges: 0-10, 10-20, etc.
+    case 0:
+      // encoderPosition is between 0 and 9
+      //Serial.println("encoderPosition is between 0 and 10");
+      COMTwinklePixels();
+      break;
+    case 1:
+      // encoderPosition is between 10 and 19
+      //Serial.println("encoderPosition is between 10 and 20");
+      COMKnightRider();
+      break;
+    case 2:
+      // encoderPosition is between 20 and 29
+      //Serial.println("encoderPosition is between 20 and 30");
+      rainbowCycle(5);
+      break;
+    case 3:
+      // encoderPosition is between 30 and 39
+      //Serial.println("encoderPosition is between 30 and 40");
+      COMFireYellow();
+      break;
+    default:
+      // encoderPosition is greater than or equal to 40 or less than 0
+      //Serial.println("encoderPosition is outside the expected range");
+      COMBlue();
+      break;
+  }
 }
 void setupEncoderPins() {
   pinMode(CLK, INPUT);
@@ -74,28 +73,28 @@ void trackRotation() {
   // Check if the CLK pin state has changed (rotation detected)
   if (currentCLK != lastCLK) {
     // Determine rotation direction based on DT pin
-    if (digitalRead(DT) != currentCLK) {
-      position++; // Clockwise
+    if (digitalRead(DT) == HIGH) {
+      encoderPosition++; // Clockwise
     } else {
-      position--; // Counterclockwise
+      encoderPosition--; // Counterclockwise
     }
-    // Output current position to the Serial Monitor
-    Serial.print("Position: ");
-    Serial.println(position);
+    // Output current encoderPosition to the Serial Monitor
+    Serial.print("encoderPosition: ");
+    Serial.println(encoderPosition);
   }
   lastCLK = currentCLK; // Update lastCLK state
 }
 void checkButton() {
   if (digitalRead(SW) == LOW) { // Button is pressed
     if (!resetFlag) { // Prevent multiple resets during a single press
-      resetPosition();
+      resetencoderPosition();
       resetFlag = true;
     }
   } else {
     resetFlag = false; // Clear reset flag when button is released
   }
 }
-// Reset the position to 0
+// Reset the encoderPosition to 0
 void resetPosition() {
   position = 0; // Reset position to 0
   Serial.println("Position reset to 0");
