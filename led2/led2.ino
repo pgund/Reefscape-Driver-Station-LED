@@ -44,11 +44,11 @@ void loop() {
             switch (positionCase) {
                 case 1:
                     Serial.println("Case 1: Range 0-5");
-                    strobe(CRGB::Red, 100);
+                    wave(CRGB::Blue, 20, 30);
                     break;
                 case 2:
                     Serial.println("Case 2: Range 5-10");
-                    wave(CRGB::Blue, 20, 30);
+                    strobe(CRGB::Red, 150);
                     break;
                 case 3:
                     Serial.println("Case 3: Range 10-15");
@@ -85,24 +85,31 @@ bool recievingData() {
 /*          ENCODER FUNCTIONS         */
 void trackEncoderRotation() {
     int currentCLK = digitalRead(CLK); // Read current state of CLK
-    if (currentCLK != lastCLK) { // Check if the CLK pin state has changed (rotation detected)
-        if (digitalRead(DT) == HIGH) { // Determine rotation direction based on DT pin
-            encoderPosition++; // Clockwise
+
+    // Check if the CLK pin state has changed (rotation detected)
+    if (currentCLK != lastCLK) {
+        // Determine rotation direction based on the state of the DT pin
+        if (digitalRead(DT) != currentCLK) { // Clockwise rotation
+            encoderPosition++;
             if (encoderPosition > MAX_ENCODER_POSITION) { // Wrap around if exceeding MAX_POSITION
                 encoderPosition = 0;
             }
-        } else {
-            encoderPosition--; // Counterclockwise
+        } else { // Counterclockwise rotation
+            encoderPosition--;
             if (encoderPosition < 0) { // Wrap around if below 0
                 encoderPosition = MAX_ENCODER_POSITION;
             }
         }
-        Serial.print("Encoder Position: ");
-        Serial.println(encoderPosition); // Print encoder position on a new line
 
-        lastCLK = currentCLK; // Update lastCLK state
+        // Print encoder position for debugging
+        Serial.print("Encoder Position: ");
+        Serial.println(encoderPosition);
     }
 
+    // Update last state of CLK
+    lastCLK = currentCLK;
+
+    // Update the position case based on encoder position
     if (encoderPosition >= 0 && encoderPosition < 5) {
         positionCase = 1;
     } else if (encoderPosition >= 5 && encoderPosition < 10) {
@@ -110,11 +117,12 @@ void trackEncoderRotation() {
     } else if (encoderPosition >= 10 && encoderPosition < 15) {
         positionCase = 3;
     } else if (encoderPosition >= 15 && encoderPosition <= 20) {
-        positionCase = 4; 
+        positionCase = 4;
     } else {
-        positionCase = 0; 
+        positionCase = 0;
     }
 }
+
 
 bool checkEncoderButton() {
     if (digitalRead(SW) == LOW) {
