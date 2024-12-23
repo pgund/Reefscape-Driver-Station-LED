@@ -43,19 +43,21 @@ void loop() {
             }
             switch (positionCase) {
                 case 1:
-                    Serial.println("Case 1: Range 0-5");
-                    wave(CRGB::Blue, 20, 30);
+                    Serial.println("Case 1: Range 0-5, TWINKLE");
+                    COMtwinkle();
                     break;
                 case 2:
-                    Serial.println("Case 2: Range 5-10");
-                    strobe(CRGB::Red, 150);
+                    Serial.println("Case 2: Range 5-10, COMET");
+                    comet(CRGB::Blue);
+                    comet(CRGB::Yellow);
                     break;
                 case 3:
-                    Serial.println("Case 3: Range 10-15");
-                    strobe(CRGB::Green, 150);
+                    Serial.println("Case 3: Range 10-15, STROBE");
+                    strobe(CRGB::Blue, 50);
+                    strobe(CRGB::Yellow, 50);
                     break;
                 case 4:
-                    Serial.println("Case 4: Range 15-20");
+                    Serial.println("Case 4: Range 15-20, RAINBOW");
                     rainbow();
                     break;
                 default:
@@ -75,11 +77,13 @@ void setupEncoderPins() {
 }
 
 bool recievingData() {
+    clearLEDs();
     if (true) {
         setLEDs(CRGB(0, 255, 0));
     } else {
         setLEDs(CRGB(255, 0, 0));
     }
+    FastLED.show(); // Show the updated state
 }
 
 /*          ENCODER FUNCTIONS         */
@@ -235,4 +239,74 @@ void comet(CRGB color) { // https://github.com/davepl/DavesGarageLEDSeries/blob/
 
 void bounce(CRGB color) {
     
+}
+
+void twinkle() {
+    static unsigned long lastUpdate = 0;  // To control the timing of the twinkle effect
+
+    int pixelVolume = 20;  // Set the volume of pixels that twinkle
+    int fadeAmount = 20;   // Set the fade amount for LEDs
+
+    unsigned long currentMillis = millis(); // Get the current time
+    if (currentMillis - lastUpdate >= 50) {  // Adjust the frequency of the effect
+        lastUpdate = currentMillis;
+
+        for (int i = 0; i < NUM_LEDS; i++) {
+            // Chance for a pixel to twinkle
+            if (random(pixelVolume) < 2) {
+                CRGB color;
+                // Alternate between yellow and blue for the twinkle effect
+                if (random(2) == 0) {
+                    color = CRGB::Yellow; // Yellow
+                } else {
+                    color = CRGB::Blue; // Blue
+                }
+
+                uint8_t intensity = random(50, 255);  // Set random intensity for each twinkle
+                leds[i] = color;
+                leds[i].fadeToBlackBy(255 - intensity);  // Apply twinkle effect with intensity
+            }
+
+            // Fade the LEDs gradually
+            if (leds[i].getAverageLight() > 0) {
+                leds[i].fadeToBlackBy(fadeAmount);  // Fade pixel to black
+            }
+        }
+        FastLED.show();  // Update the LEDs
+    }
+}
+
+void COMtwinkle() {
+    static unsigned long lastUpdate = 0;  // To control the timing of the twinkle effect
+
+    int pixelVolume = 20;  // Set the volume of pixels that twinkle
+    int fadeAmount = 20;   // Set the fade amount for LEDs
+
+    unsigned long currentMillis = millis(); // Get the current time
+    if (currentMillis - lastUpdate >= 50) {  // Adjust the frequency of the effect
+        lastUpdate = currentMillis;
+
+        for (int i = 0; i < NUM_LEDS; i++) {
+            // Chance for a pixel to twinkle
+            if (random(pixelVolume) < 2) {
+                CRGB color;
+                // Alternate between yellow and blue for the twinkle effect
+                if (random(2) == 0) {
+                    color = CRGB::Yellow; // Yellow
+                } else {
+                    color = CRGB::Blue; // Blue
+                }
+
+                uint8_t intensity = random(50, 255);  // Set random intensity for each twinkle
+                leds[i] = color;
+                leds[i].fadeToBlackBy(255 - intensity);  // Apply twinkle effect with intensity
+            }
+
+            // Fade the LEDs gradually
+            if (leds[i].getAverageLight() > 0) {
+                leds[i].fadeToBlackBy(fadeAmount);  // Fade pixel to black
+            }
+        }
+        FastLED.show();  // Update the LEDs
+    }
 }
