@@ -57,11 +57,11 @@ void loop() {
                     strobe(CRGB::Yellow, 50);
                     break;
                 case 4:
-                    Serial.println("Case 4: Range 15-20, RAINBOW");
-                    rainbow();
+                    Serial.println("Case 4: Range 15-20, STRIPS");
+                    stripes();
                     break;
                 default:
-                    Serial.println("Default case: Out of range");
+                    Serial.println("Default case: Out of range: RAINBOW");
                     rainbow();
                     break;
             }
@@ -309,4 +309,28 @@ void COMtwinkle() {
         }
         FastLED.show();  // Update the LEDs
     }
+}
+
+void stripes() {
+    static int offset = 0; // Controls the starting point of the stripes
+
+    // Create the striped pattern
+    for (int i = 0; i < NUM_LEDS; i++) {
+        // Check if the LED is part of a stripe
+        if ((i + (offset/2)) % 6 == 0) {
+            leds[i] = CRGB::Blue; // Even indices in the stripe are blue
+            leds[i-1] = CRGB::Blue; // more blue
+            leds[i-2] = CRGB::Blue; // add more blue
+        } else {
+            leds[i] = CRGB::Yellow; // Odd indices in the stripe are yellow
+        }
+    }
+
+    // Rotate the stripes by increasing the offset
+    offset++;
+    if (offset >= NUM_LEDS) {
+        offset = 0; // Reset the offset once it goes beyond the number of LEDs
+    }
+
+    FastLED.show(); // Update the LEDs with the new pattern
 }
