@@ -43,22 +43,26 @@ void loop() {
             }
             switch (positionCase) {
                 case 1:
-                    Serial.println("Case 1: Range 0-5, TWINKLE");
+                    Serial.println("Case 1: Range 0-4, TWINKLE");
                     COMtwinkle();
                     break;
                 case 2:
-                    Serial.println("Case 2: Range 5-10, COMET");
+                    Serial.println("Case 2: Range 4-8, COMET");
                     comet(CRGB::Blue);
                     comet(CRGB::Yellow);
                     break;
                 case 3:
-                    Serial.println("Case 3: Range 10-15, STROBE");
+                    Serial.println("Case 3: Range 8-12, STROBE");
                     strobe(CRGB::Blue, 50);
                     strobe(CRGB::Yellow, 50);
                     break;
                 case 4:
-                    Serial.println("Case 4: Range 15-20, STRIPS");
+                    Serial.println("Case 4: Range 12-16, STRIPS");
                     stripes();
+                    break;
+                case 5:
+                    Serial.println("Case 5: Range 16-20, RAINBOW");
+                    rainbow();
                     break;
                 default:
                     Serial.println("Default case: Out of range: RAINBOW");
@@ -116,12 +120,14 @@ void trackEncoderRotation() {
     // Update the position case based on encoder position
     if (encoderPosition >= 0 && encoderPosition < 5) {
         positionCase = 1;
-    } else if (encoderPosition >= 5 && encoderPosition < 10) {
+    } else if (encoderPosition >= 4 && encoderPosition < 8) {
         positionCase = 2;
-    } else if (encoderPosition >= 10 && encoderPosition < 15) {
+    } else if (encoderPosition >= 8 && encoderPosition < 12) {
         positionCase = 3;
-    } else if (encoderPosition >= 15 && encoderPosition <= 20) {
+    } else if (encoderPosition >= 12 && encoderPosition <= 16) {
         positionCase = 4;
+    } else if (encoderPosition >= 16 && encoderPosition <= 20) {
+        positionCase = 5;
     } else {
         positionCase = 0;
     }
