@@ -53,8 +53,7 @@ void loop() {
                     break;
                 case 3:
                     Serial.println("Case 3: Range 8-12, STROBE");
-                    strobe(CRGB::Blue, 50);
-                    strobe(CRGB::Yellow, 50);
+                    breathe(CRGB::Blue, CRGB::Yellow)
                     break;
                 case 4:
                     Serial.println("Case 4: Range 12-16, STRIPS");
@@ -205,7 +204,7 @@ void wave(CRGB color, int waveLength, int speed) {
 
 void comet(CRGB color) { // https://github.com/davepl/DavesGarageLEDSeries/blob/master/LED%20Episode%2006/src/comet.h
     const byte fadeAmount = 225;
-    const int cometSize = 5;
+    const int cometSize = 10;
     static int position = 0;
     static int direction = 1;
     static unsigned long lastUpdate = 0;
@@ -339,4 +338,26 @@ void stripes() {
     }
 
     FastLED.show(); // Update the LEDs with the new pattern
+}
+
+void breathe(CRGB color1, CRGB color2) {
+    static unsigned long lastUpdate = 0; // Tracks the last update time
+    static float progress = 0.0;         // Progress in the breathing cycle
+    static int direction = 1;           // 1 for increasing, -1 for decreasing
+
+    unsigned long currentMillis = millis();
+    if (currentMillis - lastUpdate >= 10) { // Adjust speed (10ms interval here)
+        lastUpdate = currentMillis;
+
+        // Update progress and reverse direction at boundaries
+        progress += direction * (1.0 / (3000 / 10.0));
+        if (progress >= 1.0 || progress <= 0.0) {
+            direction *= -1;
+        }
+
+        // Calculate interpolated color
+        CRGB currentColor = blend(color1, color2, progress * 255);
+        fill_solid(leds, NUM_LEDS, currentColor);
+        FastLED.show();
+    }
 }
