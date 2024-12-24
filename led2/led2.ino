@@ -94,6 +94,7 @@ bool recievingData() {
 void trackEncoderRotation() {
     int currentCLK = digitalRead(CLK); // Read current state of CLK
 
+    // Check if the CLK pin state has changed (rotation detected)
     if (currentCLK != lastCLK) {
         // Determine rotation direction based on the state of the DT pin
         if (digitalRead(DT) != currentCLK) { // Clockwise rotation
