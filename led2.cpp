@@ -1,20 +1,20 @@
 #include <FastLED.h>
 
 /*             DEFINITIONS             */
-#define NUM_LEDS 123 // Enter the total number of LEDs on the strip
-#define LED_PIN 7    // The pin connected to DATA line to control the LEDs
-CRGB leds[NUM_LEDS]; // Array to store LED colors
+#define NUM_LEDS 123 // total number of LEDs on the strip
+#define LED_PIN 7    // pin connected to DATA line to control the LEDs
+CRGB leds[NUM_LEDS]; // array to store LED colors
 
-#define CLK 2        // Clock pin for encoder (Channel A)
-#define DT 3         // Data pin for encoder (Channel B)
-#define SW 4         // Switch pin for encoder (push-button)
+#define CLK 2        // channel A
+#define DT 3         // channel B
+#define SW 4         // push-button
 
-volatile int encoderPosition = 0; // Tracks encoder position
+volatile int encoderPosition = 0; // tracks encoder position
 #define MAX_ENCODER_POSITION 20
 int positionCase = 0;
-int lastCLK; // Last state of CLK pin
+int lastCLK; // last state of CLK pin
 
-bool manual = true; // Whether or not we are connected to the driverstation
+bool manual = true; // whether or not we are connected to the driverstation -> if true NOT connected
 
 /*                SETUP                */
 void setup() {
@@ -29,15 +29,15 @@ void setup() {
 
 /*                LOOP                 */
 void loop() {
-    trackEncoderRotation(); // Track encoder rotation and update encoder position variable
+    trackEncoderRotation(); // track encoder rotation and update encoder position variable
     switch (manual) {
-        case false: // Connected to driverstation; mirroring robot state
+        case false: // connected to driverstation; mirroring robot state // TODO write functionality (based off of game)
             if (checkEncoderButton()) {
                 manual = true;
             }
             break;
 
-        case true: // Not connected to driverstation, have complete control over LEDs
+        case true: // not connected to driverstation -> have complete control over LEDs
             if (checkEncoderButton() && recievingData()) {
                 manual = false;
             }
@@ -76,47 +76,41 @@ void loop() {
 void setupEncoderPins() {
     pinMode(CLK, INPUT);
     pinMode(DT, INPUT);
-    pinMode(SW, INPUT_PULLUP); // Enable internal pull-up for switch
+    pinMode(SW, INPUT_PULLUP); // enable internal pull-up for switch
 }
 
-bool recievingData() {
+bool recievingData() { //TODO write functionality for this
     clearLEDs();
     if (true) {
         setLEDs(CRGB(0, 255, 0));
     } else {
         setLEDs(CRGB(255, 0, 0));
     }
-    FastLED.show(); // Show the updated state
+    FastLED.show();
 }
 
 /*          ENCODER FUNCTIONS         */
-void trackEncoderRotation() {
-    int currentCLK = digitalRead(CLK); // Read current state of CLK
-
-    // Check if the CLK pin state has changed (rotation detected)
+void trackEncoderRotation() { // https://howtomechatronics.com/tutorials/arduino/rotary-encoder-works-use-arduino/
+    int currentCLK = digitalRead(CLK); 
     if (currentCLK != lastCLK) {
-        // Determine rotation direction based on the state of the DT pin
-        if (digitalRead(DT) != currentCLK) { // Clockwise rotation
+        if (digitalRead(DT) != currentCLK) { // clockwise rotation
             encoderPosition++;
-            if (encoderPosition > MAX_ENCODER_POSITION) { // Wrap around if exceeding MAX_POSITION
+            if (encoderPosition > MAX_ENCODER_POSITION) { // wrap around if exceeding max encoder position
                 encoderPosition = 0;
             }
-        } else { // Counterclockwise rotation
+        } else { // counterclockwise rotation
             encoderPosition--;
-            if (encoderPosition < 0) { // Wrap around if below 0
+            if (encoderPosition < 0) { // wrap around if below 0
                 encoderPosition = MAX_ENCODER_POSITION;
             }
         }
 
-        // Print encoder position for debugging
         Serial.print("Encoder Position: ");
         Serial.println(encoderPosition);
     }
 
-    // Update last state of CLK
     lastCLK = currentCLK;
 
-    // Update the position case based on encoder position
     if (encoderPosition >= 0 && encoderPosition < 5) {
         positionCase = 1;
     } else if (encoderPosition >= 4 && encoderPosition < 8) {
@@ -134,26 +128,26 @@ void trackEncoderRotation() {
 
 
 bool checkEncoderButton() {
-    if (digitalRead(SW) == LOW) {
+    if (digitalRead(SW) == LOW) { // checks for signal
         return true;
     }
     return false;
 }
 
 void resetEncoderPosition() {
-    encoderPosition = 0; // Reset encoder position to 0
+    encoderPosition = 0; // reset encoder position to 0
     Serial.println("Encoder position reset to 0");
 }
 
 /*         ENCODER ANIMATIONS         */
 void rainbow() {
     static int hue = 0;
-    fill_rainbow(leds, NUM_LEDS, hue, 5); // Increment hue per LED
+    fill_rainbow(leds, NUM_LEDS, hue, 5); // increment hue per LED -> this makes the leds seem to move
     FastLED.show();
     hue = hue + 7;
 }
 
-void setLEDs(CRGB color) {
+void setLEDs(CRGB color) { // puts all the leds to a certain color
     fill_solid(leds, NUM_LEDS, color);
     FastLED.show();
 }
@@ -163,14 +157,14 @@ void clearLEDs() {
     FastLED.show();
 }
 
-void strobe(CRGB color, int interval) {
-    static bool isOn = false;                   // Tracks whether the LEDs are ON or OFF
-    static unsigned long lastUpdate = 0;       // Tracks the last time the strobe toggled
+void strobe(CRGB color, int interval) { // flashes a color, interval is the time between the flashes
+    static bool isOn = false;                  
+    static unsigned long lastUpdate = 0;       
 
-    unsigned long currentMillis = millis();    // Get current time
+    unsigned long currentMillis = millis();    
     if (currentMillis - lastUpdate >= interval) {
-        lastUpdate = currentMillis;            // Update the last toggle time
-        isOn = !isOn;                          // Toggle the ON/OFF state
+        lastUpdate = currentMillis;            
+        isOn = !isOn;                          
 
         if (isOn) {
             setLEDs(color); 
@@ -182,14 +176,14 @@ void strobe(CRGB color, int interval) {
 }
 
 void wave(CRGB color, int waveLength, int speed) {
-    static unsigned long lastUpdate = 0;      // Tracks the last time the wave moved
-    static int wavePosition = 0;              // Tracks the current position of the wave
+    static unsigned long lastUpdate = 0;      
+    static int wavePosition = 0;              
 
     unsigned long currentMillis = millis();
     if (currentMillis - lastUpdate >= speed) {
-        lastUpdate = currentMillis;           // Update the last update time
-        wavePosition++;                       // Increment the wave position
-        if (wavePosition >= 256) {            // Wrap wavePosition to avoid overflow
+        lastUpdate = currentMillis;           
+        wavePosition++;                       // increment the wave position -> makes it move
+        if (wavePosition >= 256) {            // wrap wavePosition to avoid overflow
             wavePosition = 0;
         }
     }
@@ -246,116 +240,108 @@ void bounce(CRGB color) {
     
 }
 
-void twinkle() {
-    static unsigned long lastUpdate = 0;  // To control the timing of the twinkle effect
+void twinkle() { // https://github.com/Electriangle/Twinkle_Pixels_Main/blob/main/Twinkle_Pixels_Main/Twinkle_Pixels_Main.ino
+    static unsigned long lastUpdate = 0;  // to control the timing of the twinkle effect
 
-    int pixelVolume = 20;  // Set the volume of pixels that twinkle
-    int fadeAmount = 20;   // Set the fade amount for LEDs
+    int pixelVolume = 20;  // set the volume of pixels that twinkle
+    int fadeAmount = 20;   // set the fade amount for LEDs
 
-    unsigned long currentMillis = millis(); // Get the current time
-    if (currentMillis - lastUpdate >= 50) {  // Adjust the frequency of the effect
+    unsigned long currentMillis = millis(); // get the current time
+    if (currentMillis - lastUpdate >= 50) {  // adjust the frequency of the effect
         lastUpdate = currentMillis;
 
         for (int i = 0; i < NUM_LEDS; i++) {
-            // Chance for a pixel to twinkle
+            // Ccance for a pixel to twinkle
             if (random(pixelVolume) < 2) {
                 CRGB color;
-                // Alternate between yellow and blue for the twinkle effect
+                // alternate between yellow and blue for the twinkle effect
                 if (random(2) == 0) {
-                    color = CRGB::Yellow; // Yellow
+                    color = CRGB::Yellow; // yellow
                 } else {
-                    color = CRGB::Blue; // Blue
+                    color = CRGB::Blue; // blue
                 }
 
-                uint8_t intensity = random(50, 255);  // Set random intensity for each twinkle
+                uint8_t intensity = random(50, 255);  // set random intensity for each twinkle
                 leds[i] = color;
-                leds[i].fadeToBlackBy(255 - intensity);  // Apply twinkle effect with intensity
+                leds[i].fadeToBlackBy(255 - intensity);  // apply twinkle effect with intensity
             }
 
-            // Fade the LEDs gradually
+            // fade the LEDs gradually
             if (leds[i].getAverageLight() > 0) {
-                leds[i].fadeToBlackBy(fadeAmount);  // Fade pixel to black
+                leds[i].fadeToBlackBy(fadeAmount);  // fade pixel to black
             }
         }
-        FastLED.show();  // Update the LEDs
+        FastLED.show();  // update the LEDs
     }
 }
 
-void COMtwinkle() {
-    static unsigned long lastUpdate = 0;  // To control the timing of the twinkle effect
+void COMtwinkle() { // basically the exact same as twinkle() but with two colors now
+    static unsigned long lastUpdate = 0; 
 
-    int pixelVolume = 20;  // Set the volume of pixels that twinkle
-    int fadeAmount = 20;   // Set the fade amount for LEDs
+    int pixelVolume = 20; 
+    int fadeAmount = 20;
 
-    unsigned long currentMillis = millis(); // Get the current time
-    if (currentMillis - lastUpdate >= 50) {  // Adjust the frequency of the effect
+    unsigned long currentMillis = millis(); 
+    if (currentMillis - lastUpdate >= 50) {  
         lastUpdate = currentMillis;
 
         for (int i = 0; i < NUM_LEDS; i++) {
-            // Chance for a pixel to twinkle
             if (random(pixelVolume) < 2) {
                 CRGB color;
-                // Alternate between yellow and blue for the twinkle effect
+              
                 if (random(2) == 0) {
-                    color = CRGB::Yellow; // Yellow
+                    color = CRGB::Yellow;
                 } else {
-                    color = CRGB::Blue; // Blue
+                    color = CRGB::Blue; 
                 }
 
-                uint8_t intensity = random(50, 255);  // Set random intensity for each twinkle
+                uint8_t intensity = random(50, 255);
                 leds[i] = color;
-                leds[i].fadeToBlackBy(255 - intensity);  // Apply twinkle effect with intensity
+                leds[i].fadeToBlackBy(255 - intensity);
             }
 
-            // Fade the LEDs gradually
             if (leds[i].getAverageLight() > 0) {
-                leds[i].fadeToBlackBy(fadeAmount);  // Fade pixel to black
+                leds[i].fadeToBlackBy(fadeAmount); 
             }
         }
-        FastLED.show();  // Update the LEDs
+        FastLED.show();  
     }
 }
 
 void stripes() {
-    static int offset = 0; // Controls the starting point of the stripes
+    static int offset = 0; 
 
-    // Create the striped pattern
     for (int i = 0; i < NUM_LEDS; i++) {
-        // Check if the LED is part of a stripe
         if ((i + (offset/2)) % 6 == 0) {
-            leds[i] = CRGB::Blue; // Even indices in the stripe are blue
-            leds[i-1] = CRGB::Blue; // more blue
-            leds[i-2] = CRGB::Blue; // add more blue
+            leds[i] = CRGB::Blue;
+            leds[i-1] = CRGB::Blue; 
+            leds[i-2] = CRGB::Blue; 
         } else {
-            leds[i] = CRGB::Yellow; // Odd indices in the stripe are yellow
-        }
+            leds[i] = CRGB::Yellow; 
     }
 
-    // Rotate the stripes by increasing the offset
     offset++;
     if (offset >= NUM_LEDS) {
-        offset = 0; // Reset the offset once it goes beyond the number of LEDs
+        offset = 0;
     }
 
-    FastLED.show(); // Update the LEDs with the new pattern
+    FastLED.show(); 
 }
 
 void breathe(CRGB color1, CRGB color2) {
-    static unsigned long lastUpdate = 0; // Tracks the last update time
-    static float progress = 0.0;         // Progress in the breathing cycle
+    static unsigned long lastUpdate = 0; 
+    static float progress = 0.0;         
     static int direction = 1;           // 1 for increasing, -1 for decreasing
 
     unsigned long currentMillis = millis();
-    if (currentMillis - lastUpdate >= 10) { // Adjust speed (10ms interval here)
+    if (currentMillis - lastUpdate >= 10) {
         lastUpdate = currentMillis;
 
-        // Update progress and reverse direction at boundaries
-        progress += direction * (1.0 / (3000 / 10.0));
+        progress += direction * (1.0 / (3000 / 10.0)); // 3000 is three seconds
         if (progress >= 1.0 || progress <= 0.0) {
             direction *= -1;
         }
 
-        // Calculate interpolated color
         CRGB currentColor = blend(color1, color2, progress * 255);
         fill_solid(leds, NUM_LEDS, currentColor);
         FastLED.show();
